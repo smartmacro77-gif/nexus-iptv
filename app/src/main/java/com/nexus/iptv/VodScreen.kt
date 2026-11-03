@@ -25,10 +25,6 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun VodScreen(title: String) {
     val categories = listOf("Todos", "Pedidos", "Lançamentos", "Cinema", "Dramas Curtos", "4K", "Ação", "Doramas")
-    
-    // Estado atual do foco na esquerda (apenas navegação livre)
-    var focusedCategory by remember { mutableStateOf("Todos") }
-    // Estado da categoria aplicada SOMENTE ao pressionar Enter (OK)
     var selectedCategory by remember { mutableStateOf("Todos") }
 
     Row(
@@ -37,7 +33,6 @@ fun VodScreen(title: String) {
             .background(Color(0xFF0F0F0F))
             .padding(16.dp)
     ) {
-        // Coluna Esquerda: Categorias (Apenas navega, ativa ao dar Enter)
         LazyColumn(
             modifier = Modifier
                 .width(260.dp)
@@ -63,7 +58,6 @@ fun VodScreen(title: String) {
                         .onFocusChanged { isFocused = it.isFocused }
                         .focusable()
                         .onKeyEvent { event ->
-                            // Só aplica a seleção da categoria ao pressionar Enter / OK no D-pad
                             if (event.key == Key.DirectionCenter || event.key == Key.Enter) {
                                 selectedCategory = cat
                                 true
@@ -71,7 +65,7 @@ fun VodScreen(title: String) {
                                 false
                             }
                         },
-                    contentAlignment = androidx.compose.ui.Alignment.CenterStart
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
                         text = "  $cat",
@@ -82,7 +76,6 @@ fun VodScreen(title: String) {
             }
         }
 
-        // Coluna Direita: Conteúdo filtrado pela categoria confirmada com Enter
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             Text(
                 text = "$title > $selectedCategory",

@@ -36,7 +36,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             Text(text = "Entrar", color = Color.White, fontSize = 22.sp)
             Text(text = "Xtream Codes API", color = Color(0xFFA0A0A0), fontSize = 12.sp)
 
-            // Campos de input (url, user, pass) com foco unificado vermelho
             listOf("Server URL", "Username", "Password").forEach { placeholder ->
                 var isFocused by remember { mutableStateOf(false) }
                 Box(
@@ -58,7 +57,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 }
             }
 
-            // Botão Conectar
             var btnFocused by remember { mutableStateOf(false) }
             Box(
                 modifier = Modifier

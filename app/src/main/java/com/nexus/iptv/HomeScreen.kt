@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +31,6 @@ fun HomeScreen() {
     var currentHeroIndex by remember { mutableStateOf(0) }
     var isHeroFocused by remember { mutableStateOf(false) }
 
-    // Auto-scroll do Hero Banner a cada 6 segundos (pausa se estiver focado)
     LaunchedEffect(isHeroFocused) {
         if (!isHeroFocused) {
             while (true) {
@@ -46,15 +46,14 @@ fun HomeScreen() {
             .background(Color(0xFF0F0F0F))
             .padding(24.dp)
     ) {
-        // Hero Banner Dinâmico
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color(0xFF1C1C1C))
-                .focusable()
-                .onFocusChanged { isHeroFocused = it.isFocused },
+                .onFocusChanged { isHeroFocused = it.isFocused }
+                .focusable(),
             contentAlignment = Alignment.CenterStart
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
@@ -68,7 +67,6 @@ fun HomeScreen() {
         Text(text = "Trending Now", color = Color.White, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Carrossel horizontal otimizado
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
