@@ -22,10 +22,11 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon
+      run: ./gradlew assembleDebug
 
-    - name: Upload APK Artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: NexusIPTV-apk
         path: app/build/outputs/apk/debug/app-debug.apk
+        if-no-files-found: error
