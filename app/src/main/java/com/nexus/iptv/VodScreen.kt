@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
     val movies = listOf(
-        VodItem("1", "Filme Exemplo 1", "", "", "8.5", "Ação", "", false, "Sinopse do filme", "2024", "Ação"),
-        VodItem("2", "Filme Exemplo 2", "", "", "7.8", "Drama", "", false, "Sinopse do drama", "2023", "Drama")
+        VodItem("1", "Filme Exemplo 1", "", "", "8.5", "Ação", "", false, "Sinopse", "2024", "Ação"),
+        VodItem("2", "Filme Exemplo 2", "", "", "7.8", "Drama", "", false, "Sinopse", "2023", "Drama")
     )
 
     Box(
@@ -41,11 +41,7 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = Color.White)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "VOD - FILMES E SÉRIES",
-                    color = Color.White,
-                    fontSize = 22.sp
-                )
+                Text(text = "VOD - FILMES E SÉRIES", color = Color.White, fontSize = 22.sp)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -57,17 +53,9 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(movies) { movie ->
-                    var isFocused by remember { mutableStateOf(false) }
-
                     Card(
                         modifier = Modifier
-                            .height(120.dp)
-                            .tvFocusable { isFocused = it }
-                            .border(
-                                width = if (isFocused) 2.dp else 1.dp,
-                                color = if (isFocused) Color(0xFFE50914) else Color(0xFF1F1F2E),
-                                shape = RoundedCornerShape(12.dp)
-                            )
+                            .height(100.dp)
                             .clickable { onSelectMovie(movie) },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF13131A)),
                         shape = RoundedCornerShape(12.dp)
@@ -76,16 +64,10 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
                             modifier = Modifier.fillMaxSize().padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Movie,
-                                contentDescription = movie.title,
-                                tint = if (isFocused) Color(0xFFE50914) else Color.White,
-                                modifier = Modifier.size(40.dp)
-                            )
+                            Icon(Icons.Default.Movie, contentDescription = movie.title, tint = Color.Red, modifier = Modifier.size(36.dp))
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text(text = movie.title, color = Color.White, fontSize = 16.sp, maxLines = 1)
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(text = movie.title, color = Color.White, fontSize = 16.sp)
                                 Text(text = movie.category, color = Color.Gray, fontSize = 12.sp)
                             }
                         }
