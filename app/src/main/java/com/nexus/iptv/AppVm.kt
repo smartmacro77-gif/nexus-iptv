@@ -69,10 +69,17 @@ class AppVm(app: Application) : AndroidViewModel(app) {
     private val detailCache = HashMap<String, Pair<VodItem, Map<Int, List<Episode>>>>()
 
     // ---- memória de UI (restaurar foco ao voltar) ----
-    var liveCatIdx by mutableIntStateOf(1)
+    // categoria selecionada (fonte única de verdade para Filmes, Séries e Live)
+    var movieCatId by mutableStateOf("all")
+    var seriesCatId by mutableStateOf("all")
+    var liveCatId by mutableStateOf("all")
+    fun selectedCategoryId(series: Boolean): String = if (series) seriesCatId else movieCatId
+    fun onCategoryClick(series: Boolean, categoryId: String) {
+        if (series) { seriesCatId = categoryId } else { movieCatId = categoryId }
+    }
+    fun onLiveCategoryClick(categoryId: String) { liveCatId = categoryId }
     var liveFocusId by mutableStateOf<Int?>(null)
     var livePreviewId by mutableStateOf<Int?>(null)
-    val vodCat = HashMap<Boolean, String>()
     val vodLast = HashMap<Boolean, Int>()
 
     // ---- player ----

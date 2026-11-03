@@ -149,10 +149,10 @@ suspend fun FocusRequester.focusSoon(delayMs: Long = 150) { delay(delayMs); runC
 // ================= COMPONENTES =================
 @Composable
 fun NxButton(text: String, icon: ImageVector?, primary: Boolean, modifier: Modifier = Modifier,
-             requester: FocusRequester? = null, onClick: () -> Unit) {
+             requester: FocusRequester? = null, onFocusChange: (Boolean) -> Unit = {}, onClick: () -> Unit) {
     Row(
         modifier.height(36.dp)
-            .nexusFocus(9.dp, if (primary) NX.Crimson else Color(0x40FFFFFF), requester = requester, onClick = onClick)
+            .nexusFocus(9.dp, if (primary) NX.Crimson else Color(0x40FFFFFF), requester = requester, onFocusChange = onFocusChange, onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
     ) {

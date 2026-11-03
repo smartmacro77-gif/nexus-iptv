@@ -29,11 +29,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun PosterGrid(
     vm: AppVm, items: List<VodItem>, modifier: Modifier = Modifier, restoreId: Int? = null,
-    leftReq: FocusRequester? = null, columns: Int = 5, onItemFocus: (VodItem) -> Unit = {}
+    leftReq: FocusRequester? = null, columns: Int = 5, firstReq: FocusRequester? = null,
+    onItemFocus: (VodItem) -> Unit = {}
 ) {
     val startIdx = remember { restoreId?.let { id -> items.indexOfFirst { it.id == id }.coerceAtLeast(0) } ?: 0 }
     val state = rememberLazyGridState(initialFirstVisibleItemIndex = startIdx)
@@ -48,7 +50,8 @@ fun PosterGrid(
             PosterCard(
                 item,
                 if (leftReq != null && index % columns == 0) Modifier.focusProperties { left = leftReq } else Modifier,
-                requester = if (restoreId != null && item.id == restoreId) restore else null,
+                requester = if (index == 0 && firstReq != null) firstReq
+                            else if (restoreId != null && item.id == restoreId) restore else null,
                 onFocusChange = { if (it) onItemFocus(item) },
                 onMenu = { vm.toggleMyList(item) },
                 onClick = { vm.push(Screen.Detail(item)) }
@@ -66,13 +69,25 @@ fun VodScreen(vm: AppVm, series: Boolean) {
     val cats = remember(rawCats, all) { listOf(Category("all", "Todos", all.size)) + rawCats }
     var query by remember { mutableStateOf("") }
     val shown = remember(cats, query) { if (query.isBlank()) cats else cats.filter { it.name.contains(query, true) } }
-    var catId by remember { mutableStateOf(vm.vodCat[series] ?: "all") }
+
+    // O estado vive na ViewModel: selectedCategoryId(series)
+    val catId = vm.selectedCategoryId(series).let { id -> if (cats.any { it.id == id }) id else "all" }
     val shownItems = remember(catId, all) { if (catId == "all") all else all.filter { it.catId == catId } }
+
+    val scope = rememberCoroutineScope()
     val selReq = remember { FocusRequester() }
-    val restoreId = remember { vm.vodLast[series] }
+    val firstReq = remember { FocusRequester() }
+    var restoreId by remember { mutableStateOf(vm.vodLast[series]) }
     LaunchedEffect(Unit) { if (restoreId == null) selReq.focusSoon(300) }
     val selVisible = shown.any { it.id == catId }
     val cur = cats.firstOrNull { it.id == catId }
+
+    // Chamado ao focar (pré-visualiza) e ao clicar OK/Enter (confirma)
+    val onCategoryClick: (Category, Boolean) -> Unit = { c, confirm ->
+        if (c.id != catId) { restoreId = null; vm.vodLast.remove(series) }
+        vm.onCategoryClick(series, c.id)
+        if (confirm) scope.launch { firstReq.focusSoon(120) }
+    }
 
     NexusBackground {
         Row(Modifier.fillMaxSize()) {
@@ -87,7 +102,8 @@ fun VodScreen(vm: AppVm, series: Boolean) {
                     items(shown) { c ->
                         CategoryRow(c.name, c.count, null, selected = c.id == catId,
                             requester = if (c.id == catId) selReq else null,
-                            onFocusChange = { if (it) { catId = c.id; vm.vodCat[series] = c.id } })
+                            onFocusChange = { if (it) onCategoryClick(c, false) },
+                            onClick = { onCategoryClick(c, true) })
                     }
                 }
             }
@@ -101,8 +117,9 @@ fun VodScreen(vm: AppVm, series: Boolean) {
                 }
                 if (shownItems.isEmpty()) Loading(if (loading) null else vm.loadError ?: "Nada por aqui")
                 else key(catId) {
-                    PosterGrid(vm, shownItems, Modifier.fillMaxSize(), restoreId = if (restoreId != null && catId == vm.vodCat[series]) restoreId else null,
-                        leftReq = if (selVisible) selReq else null, onItemFocus = { vm.vodLast[series] = it.id })
+                    PosterGrid(vm, shownItems, Modifier.fillMaxSize(), restoreId = restoreId,
+                        leftReq = if (selVisible) selReq else null, firstReq = firstReq,
+                        onItemFocus = { vm.vodLast[series] = it.id })
                 }
             }
         }

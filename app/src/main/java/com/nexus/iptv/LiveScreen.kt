@@ -33,6 +33,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,8 +60,8 @@ fun LiveScreen(vm: AppVm) {
     val cats = remember(vm.liveCats, vm.channels, vm.favLive.size) {
         listOf(Category("fav", "Favoritos", vm.favLive.size), Category("all", "Todos os canais", vm.channels.size)) + vm.liveCats
     }
-    val catIdx = vm.liveCatIdx.coerceIn(0, cats.size - 1)
-    val cat = cats[catIdx]
+    val catId = vm.liveCatId.let { id -> if (cats.any { it.id == id }) id else "all" }
+    val cat = cats.first { it.id == catId }
     val list = remember(cat.id, vm.channels, vm.favLive.size) {
         when (cat.id) {
             "fav" -> vm.channels.filter { it.id in vm.favLive }
@@ -69,6 +70,8 @@ fun LiveScreen(vm: AppVm) {
         }
     }
     val selReq = remember { FocusRequester() }
+    val firstReq = remember { FocusRequester() }
+    val scope = rememberCoroutineScope()
     val restoreReq = remember { FocusRequester() }
     val restoreId = remember { vm.liveFocusId }
     var restored by remember { mutableStateOf(false) }
@@ -103,10 +106,14 @@ fun LiveScreen(vm: AppVm) {
                 // Coluna 1: categorias
                 Panel(Modifier.width(190.dp)) {
                     LazyColumn(contentPadding = PaddingValues(8.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        itemsIndexed(cats) { i, c ->
-                            CategoryRow(c.name, c.count, catIcon(c), selected = i == catIdx,
-                                requester = if (i == catIdx) selReq else null,
-                                onFocusChange = { if (it) vm.liveCatIdx = i })
+                        itemsIndexed(cats) { _, c ->
+                            CategoryRow(c.name, c.count, catIcon(c), selected = c.id == catId,
+                                requester = if (c.id == catId) selReq else null,
+                                onFocusChange = { if (it) vm.onLiveCategoryClick(c.id) },   // pré-visualiza ao focar
+                                onClick = {                                               // OK/Enter confirma e vai para a lista
+                                    vm.onLiveCategoryClick(c.id)
+                                    scope.launch { firstReq.focusSoon(120) }
+                                })
                         }
                     }
                 }
@@ -122,7 +129,7 @@ fun LiveScreen(vm: AppVm) {
                                 ChannelRow(
                                     ch, vm.epg[ch.id], vm.prefs.showEpg, ch.id in vm.favLive, ch.id == vm.livePreviewId,
                                     Modifier.focusProperties { left = selReq },
-                                    if (ch.id == restoreId) restoreReq else null,
+                                    if (i == 0) firstReq else if (ch.id == restoreId) restoreReq else null,
                                     onFocus = { vm.liveFocusId = ch.id },
                                     onMenu = { vm.toggleFavLive(ch.id) },
                                     onClick = { if (vm.livePreviewId == ch.id) vm.playLive(list, i) else vm.livePreviewId = ch.id }
