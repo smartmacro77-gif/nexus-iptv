@@ -19,19 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class VodItem(val title: String, val category: String)
-
 @Composable
 fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
-    var focusedIndex by remember { mutableStateOf(0) }
-
     val movies = listOf(
-        VodItem("Filme Exemplo 1", "Ação"),
-        VodItem("Filme Exemplo 2", "Drama"),
-        VodItem("Filme Exemplo 3", "Ficção"),
-        VodItem("Filme Exemplo 4", "Comédia"),
-        VodItem("Filme Exemplo 5", "Terror"),
-        VodItem("Filme Exemplo 6", "Aventura")
+        VodItem("1", "Filme Exemplo 1", "", "", "8.5", "Ação", "", false, "Sinopse do filme", "2024", "Ação"),
+        VodItem("2", "Filme Exemplo 2", "", "", "7.8", "Drama", "", false, "Sinopse do drama", "2023", "Drama")
     )
 
     Box(
@@ -41,7 +33,6 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
             .padding(24.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -53,19 +44,15 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
                 Text(
                     text = "VOD - FILMES E SÉRIES",
                     color = Color.White,
-                    fontSize = 22.sp,
-                    style = MaterialTheme.typography.titleLarge
+                    fontSize = 22.sp
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Grid de VOD (2 colunas principais focadas em TV)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -86,9 +73,7 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
+                            modifier = Modifier.fillMaxSize().padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -99,18 +84,9 @@ fun VodScreen(onBack: () -> Unit, onSelectMovie: (VodItem) -> Unit) {
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text(
-                                    text = movie.title,
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    maxLines = 1
-                                )
+                                Text(text = movie.title, color = Color.White, fontSize = 16.sp, maxLines = 1)
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = movie.category,
-                                    color = Color.Gray,
-                                    fontSize = 12.sp
-                                )
+                                Text(text = movie.category, color = Color.Gray, fontSize = 12.sp)
                             }
                         }
                     }

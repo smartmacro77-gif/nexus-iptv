@@ -5,7 +5,8 @@ data class Channel(
     val name: String,
     val logo: String,
     val streamUrl: String,
-    val category: String
+    val category: String,
+    val epg: String? = null
 )
 
 data class VodItem(
@@ -15,6 +16,9 @@ data class VodItem(
     val backdrop: String,
     val rating: String,
     val category: String,
-    val streamUrl: String
+    val streamUrl: String,
+    val isSeries: Boolean = false,
+    val plot: String? = null,
+    val year: String? = null,
+    val genre: String? = null
 )
-
