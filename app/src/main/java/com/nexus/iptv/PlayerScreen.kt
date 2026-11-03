@@ -28,7 +28,6 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 
@@ -120,8 +119,7 @@ fun PlayerScreen(vm: AppVm) {
             .focusable()
     ) {
         AndroidView(
-            factory = { c -> PlayerView(c).apply { useController = false; this.player = player; isFocusable = false
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT; setShutterBackgroundColor(android.graphics.Color.BLACK) } },
+            factory = { c -> PlayerView(c).apply { useController = false; this.player = player; isFocusable = false } },
             modifier = Modifier.fillMaxSize()
         )
         if (buffering && error == null) CircularProgressIndicator(color = NX.Crimson, modifier = Modifier.align(Alignment.Center).size(40.dp))

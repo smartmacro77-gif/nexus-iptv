@@ -42,15 +42,24 @@ class AppVm(app: Application) : AndroidViewModel(app) {
     var loginError by mutableStateOf<String?>(null)
 
     // ---- dados ----
-    var liveCats by mutableStateOf<List<Category>>(emptyList()); private set
-    var channels by mutableStateOf<List<Channel>>(emptyList()); private set
-    var movieCats by mutableStateOf<List<Category>>(emptyList()); private set
-    var movies by mutableStateOf<List<VodItem>>(emptyList()); private set
-    var seriesCats by mutableStateOf<List<Category>>(emptyList()); private set
-    var seriesList by mutableStateOf<List<VodItem>>(emptyList()); private set
-    var liveLoading by mutableStateOf(false); private set
-    var movieLoading by mutableStateOf(false); private set
-    var seriesLoading by mutableStateOf(false); private set
+    var liveCats by mutableStateOf<List<Category>>(emptyList())
+        private set
+    var channels by mutableStateOf<List<Channel>>(emptyList())
+        private set
+    var movieCats by mutableStateOf<List<Category>>(emptyList())
+        private set
+    var movies by mutableStateOf<List<VodItem>>(emptyList())
+        private set
+    var seriesCats by mutableStateOf<List<Category>>(emptyList())
+        private set
+    var seriesList by mutableStateOf<List<VodItem>>(emptyList())
+        private set
+    var liveLoading by mutableStateOf(false)
+        private set
+    var movieLoading by mutableStateOf(false)
+        private set
+    var seriesLoading by mutableStateOf(false)
+        private set
     var loadError by mutableStateOf<String?>(null)
 
     val favLive = mutableStateListOf<Int>().apply { addAll(prefs.favLive()) }
@@ -70,12 +79,6 @@ class AppVm(app: Application) : AndroidViewModel(app) {
     var nowPlaying by mutableStateOf<NowPlaying?>(null)
     private var zapList: List<Channel> = emptyList()
     private var zapIndex = 0
-
-    init {
-        if (prefs.autoLogin && prefs.rememberMe && prefs.host.isNotBlank() && prefs.user.isNotBlank()) {
-            login(prefs.host, prefs.user, prefs.pass, true)
-        }
-    }
 
     private val adult = Regex("adult|xxx|\\+18|18\\+|porn|sexo|erotic|hot", RegexOption.IGNORE_CASE)
     private fun allowed(name: String) = prefs.parentalPin.isEmpty() || !adult.containsMatchIn(name)
@@ -160,7 +163,8 @@ class AppVm(app: Application) : AndroidViewModel(app) {
     suspend fun epgFor(id: Int) {
         if (epg.containsKey(id)) return
         val a = api ?: return
-        epgSem.withPermit { if (!epg.containsKey(id)) epg[id] = a.shortEpg(id) }
+        val res = epgSem.withPermit { a.shortEpg(id) }
+        epg[id] = res
     }
 
     suspend fun detail(item: VodItem): Pair<VodItem, Map<Int, List<Episode>>> {
@@ -224,4 +228,10 @@ class AppVm(app: Application) : AndroidViewModel(app) {
     fun playVod(i: VodItem) = play(NowPlaying(i.name, api!!.movieUrl(i.id, i.ext.ifEmpty { "mp4" }), false, "vod:${i.id}"))
     fun playEpisode(s: VodItem, e: Episode) =
         play(NowPlaying("${s.name} • T${e.season} E${e.num}", api!!.seriesUrl(e.id, e.ext), false, "ep:${e.id}"))
+
+    init {
+        if (prefs.autoLogin && prefs.rememberMe && prefs.host.isNotBlank() && prefs.user.isNotBlank()) {
+            login(prefs.host, prefs.user, prefs.pass, true)
+        }
+    }
 }

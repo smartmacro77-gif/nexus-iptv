@@ -1,0 +1,6 @@
+1) Crie um repositório no GitHub (pode ser privado).
+2) Envie TODO o conteúdo desta pasta para a RAIZ do repositório
+   (settings.gradle, build.gradle, app/, .github/ ... devem ficar na raiz, não dentro de outra pasta).
+3) Aba Actions > "Build APK" > Run workflow (ou ele roda sozinho a cada envio).
+4) Quando ficar verde, abra a execução e baixe o artefato "NexusIPTV-apk".
+Se falhar: abra a execução, clique no passo vermelho e copie as linhas com "e:" (erros Kotlin) para me enviar.
