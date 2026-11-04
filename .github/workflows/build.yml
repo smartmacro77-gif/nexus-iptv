@@ -19,26 +19,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - uses: gradle/actions/setup-gradle@v3
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build APK debug
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload APK debug
+        uses: actions/upload-artifact@v4
         with:
-          gradle-version: 8.7
-
-      - name: Make gradlew executable (if exists)
-        run: |
-          if [ -f "./gradlew" ]; then chmod +x gradlew; fi
-
-      - name: Build debug e release
-        run: |
-          if [ -f "./gradlew" ]; then
-            ./gradlew assembleDebug assembleRelease --stacktrace --no-daemon
-          else
-            gradle assembleDebug assembleRelease --stacktrace --no-daemon
-          fi
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: NexusIPTV-apk
+          name: app-debug
           if-no-files-found: error
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/debug/app-debug.apk

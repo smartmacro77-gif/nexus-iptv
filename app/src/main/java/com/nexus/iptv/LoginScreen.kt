@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
+fun LoginScreen(vm: AppVm, onExit: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()

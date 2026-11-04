@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(vm: AppVm) {
     val heroItems = listOf(
         "João e Maria: Caçadores de Bruxas",
         "Apocalypse New World",
