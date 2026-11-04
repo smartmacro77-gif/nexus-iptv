@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
@@ -23,7 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun VodScreen(title: String) {
+fun VodScreen(vm: AppVm, isSeries: Boolean = false) {
+    val title = if (isSeries) "Séries" else "Filmes"
     val categories = listOf("Todos", "Pedidos", "Lançamentos", "Cinema", "Dramas Curtos", "4K", "Ação", "Doramas")
     var selectedCategory by remember { mutableStateOf("Todos") }
 
